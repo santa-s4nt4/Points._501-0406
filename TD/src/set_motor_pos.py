@@ -18,11 +18,14 @@ def onOffToOn(channel: Channel, sampleIndex: int, val: float,
 		prev: The previous sample value
 	"""
 
-	if channel.name == 'calib_mode':
+	if channel.name == 'mode':
 		op("serial1").send('F', terminator='\n')
 	
 	if channel.name == 'zero':
 		op("serial1").send('Z', terminator='\n')
+
+	if channel.name == 'calib':
+		op("serial1").send('C', terminator='\n')
 	return
 
 def whileOn(channel: Channel, sampleIndex: int, val: float, 
@@ -49,7 +52,7 @@ def onOnToOff(channel: Channel, sampleIndex: int, val: float,
 		val: The numeric value of the changed sample
 		prev: The previous sample value
 	"""
-	if channel.name == 'calib_mode':
+	if channel.name == 'mode':
 		op("serial1").send('L', terminator='\n')
 	return
 
