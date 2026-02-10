@@ -19,13 +19,10 @@ def onOffToOn(channel: Channel, sampleIndex: int, val: float,
 	"""
 
 	if channel.name == 'mode':
-		op("serial1").send('F', terminator='\n')
+		op("serial2").send('F', terminator='\n')
 
 	if channel.name == 'calib':
-		op("serial1").send('C', terminator='\n')
-	if channel.name == 'start':
-		op('timeline').time.frame = 0
-		op('timeline').time.play = 1
+		op("serial2").send('C', terminator='\n')
 	return
 
 def whileOn(channel: Channel, sampleIndex: int, val: float, 
@@ -53,7 +50,7 @@ def onOnToOff(channel: Channel, sampleIndex: int, val: float,
 		prev: The previous sample value
 	"""
 	if channel.name == 'mode':
-		op("serial1").send('L', terminator='\n')
+		op("serial2").send('L', terminator='\n')
 	return
 
 def whileOff(channel: Channel, sampleIndex: int, val: float, 
@@ -82,5 +79,5 @@ def onValueChange(channel: Channel, sampleIndex: int, val: float,
 	"""
 	if channel.name == 'pos':
 		cmd = 'P' + str(int(val))
-		op("serial1").send(cmd, terminator='\n')
+		op("serial2").send(cmd, terminator='\n')
 	return
