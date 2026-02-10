@@ -281,21 +281,33 @@ void setup() {
     delay(100);
 
     roller.setRGBBrightness(0);
-    roller.setMode(ROLLER_MODE_POSITION);
+    // 1. Start with Calibration
+    performCalibration();
 
-    // パラメータ設定
-    roller.setSpeed(DEFAULT_SPEED_LIMIT);
-    roller.setSpeedMaxCurrent(DEFAULT_MAX_CURRENT);
+    // 2. Wait 3 seconds (Locked state from calibration)
+    M5.Lcd.fillScreen(TFT_BLUE);
+    M5.Lcd.setCursor(0, 0);
+    M5.Lcd.print("Wait 1s...");
+    Serial.println("Calibration Done. Wait 1s...");
+    delay(1000);
 
-    delay(100);
-    roller.setOutput(1);
+    // 3. Enter Free Mode
+    Serial.println("Enter Free Mode");
+    roller.setMode(ROLLER_MODE_ENCODER);
+
+    // Reset Position
+    roller.setDialCounter(0);
+    roller.setPos(0);
+    target_position = 0;
+
+    // Output OFF (Free)
+    roller.setOutput(0);
+    is_free_mode = true;
+
+    M5.Lcd.fillScreen(TFT_YELLOW);
+    M5.Lcd.setCursor(0, 0);
+    M5.Lcd.print("Free Mode");
   }
-
-  delay(100);
-  roller.setDialCounter(0);
-  roller.setPos(0);
-  target_position = 0;
-  Serial.printf("Start Pos Reset to: %d\n", target_position);
 
   delay(500);
   M5.Lcd.fillScreen(TFT_BLACK);
