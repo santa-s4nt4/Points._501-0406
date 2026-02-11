@@ -215,15 +215,6 @@ void parseSerialCommand() {
       return;
     }
 
-    // --- Z: ゼロ点リセット ---
-    if (cmd.startsWith("Z")) {
-      Serial.println("Zero Reset Command Received");
-      roller.setDialCounter(0); // Restore origin to current position
-      roller.setPos(0);
-      target_position = 0;
-      return;
-    }
-
     // --- H: ホーミング ---
     if (cmd.startsWith("H")) {
       performHoming();
