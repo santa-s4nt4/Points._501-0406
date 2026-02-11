@@ -3,6 +3,3 @@ CompileFlags:
     - -mlongcalls
     - -fstrict-volatile-bitfields
     - -fno-tree-switch-conversion
-  Add:
-    - "-I/Users/santa/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32s3/include/xtensa/include"
-    - "-I/Users/santa/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32s3/include/xtensa/esp32s3/include"
