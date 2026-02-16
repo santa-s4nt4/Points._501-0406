@@ -10,7 +10,7 @@ FILE_DESCRIPTION(
 
 FILE_NAME(
 /* name */ 'motor_joint.step',
-/* time_stamp */ '2026-02-12T13:07:40+09:00',
+/* time_stamp */ '2026-02-15T06:57:51+09:00',
 /* author */ (''),
 /* organization */ (''),
 /* preprocessor_version */ 'ST-DEVELOPER v20.1',
@@ -320,14 +320,14 @@ POSITIVE_RATIO_MEASURE(7850.),#196);
 #300=DIRECTION('center_axis',(0.,0.,1.));
 #301=DIRECTION('ref_axis',(1.,0.,0.));
 #302=CARTESIAN_POINT('',(0.,0.,0.));
-#303=CARTESIAN_POINT('Origin',(0.,0.,-20.5));
-#304=CARTESIAN_POINT('',(-2.98,-3.64944746145911E-16,-20.5));
-#305=CARTESIAN_POINT('Origin',(0.,0.,-20.5));
-#306=CARTESIAN_POINT('Origin',(0.,0.,-4.));
-#307=CARTESIAN_POINT('',(-22.5,-2.75545529808154E-15,-4.));
-#308=CARTESIAN_POINT('Origin',(0.,0.,-4.));
-#309=CARTESIAN_POINT('',(-2.98,-3.64944746145911E-16,-4.));
-#310=CARTESIAN_POINT('Origin',(0.,0.,-4.));
+#303=CARTESIAN_POINT('Origin',(0.,0.,-19.5));
+#304=CARTESIAN_POINT('',(-2.98,-3.64944746145911E-16,-19.5));
+#305=CARTESIAN_POINT('Origin',(0.,0.,-19.5));
+#306=CARTESIAN_POINT('Origin',(0.,0.,-3.));
+#307=CARTESIAN_POINT('',(-22.5,-2.75545529808154E-15,-3.));
+#308=CARTESIAN_POINT('Origin',(0.,0.,-3.));
+#309=CARTESIAN_POINT('',(-2.98,-3.64944746145911E-16,-3.));
+#310=CARTESIAN_POINT('Origin',(0.,0.,-3.));
 #311=CARTESIAN_POINT('Origin',(0.,0.,0.));
 #312=CARTESIAN_POINT('',(-2.98,3.64944746145911E-16,0.));
 #313=CARTESIAN_POINT('Origin',(-8.,16.,0.));
@@ -414,16 +414,16 @@ SOLID_ANGLE_UNIT()
 #362=PRODUCT_DEFINITION_SHAPE('',$,#365);
 #363=SHAPE_REPRESENTATION('',(#205),#355);
 #364=PRODUCT_DEFINITION_CONTEXT('part definition',#369,'design');
-#365=PRODUCT_DEFINITION('motor_joint','motor_joint v1',#366,#364);
+#365=PRODUCT_DEFINITION('motor_joint','motor_joint v3',#366,#364);
 #366=PRODUCT_DEFINITION_FORMATION('',$,#371);
-#367=PRODUCT_RELATED_PRODUCT_CATEGORY('motor_joint v1','motor_joint v1',
+#367=PRODUCT_RELATED_PRODUCT_CATEGORY('motor_joint v3','motor_joint v3',
 (#371));
 #368=APPLICATION_PROTOCOL_DEFINITION('international standard',
 'automotive_design',2009,#369);
 #369=APPLICATION_CONTEXT(
 'Core Data for Automotive Mechanical Design Process');
 #370=PRODUCT_CONTEXT('part definition',#369,'mechanical');
-#371=PRODUCT('motor_joint','motor_joint v1',$,(#370));
+#371=PRODUCT('motor_joint','motor_joint v3',$,(#370));
 #372=PRESENTATION_STYLE_ASSIGNMENT((#373));
 #373=SURFACE_STYLE_USAGE(.BOTH.,#374);
 #374=SURFACE_SIDE_STYLE('',(#375));

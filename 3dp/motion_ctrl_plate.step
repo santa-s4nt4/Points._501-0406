@@ -10,7 +10,7 @@ FILE_DESCRIPTION(
 
 FILE_NAME(
 /* name */ 'motion_ctrl_plate.step',
-/* time_stamp */ '2026-02-12T07:18:23+09:00',
+/* time_stamp */ '2026-02-15T06:59:02+09:00',
 /* author */ (''),
 /* organization */ (''),
 /* preprocessor_version */ 'ST-DEVELOPER v20.1',
@@ -3033,17 +3033,17 @@ SOLID_ANGLE_UNIT()
 #2967=PRODUCT_DEFINITION_SHAPE('',$,#2970);
 #2968=SHAPE_REPRESENTATION('',(#1746),#2960);
 #2969=PRODUCT_DEFINITION_CONTEXT('part definition',#2974,'design');
-#2970=PRODUCT_DEFINITION('motion_ctrl_plate','motion_ctrl_plate v7',#2971,
+#2970=PRODUCT_DEFINITION('motion_ctrl_plate','motion_ctrl_plate v8',#2971,
 #2969);
 #2971=PRODUCT_DEFINITION_FORMATION('',$,#2976);
-#2972=PRODUCT_RELATED_PRODUCT_CATEGORY('motion_ctrl_plate v7',
-'motion_ctrl_plate v7',(#2976));
+#2972=PRODUCT_RELATED_PRODUCT_CATEGORY('motion_ctrl_plate v8',
+'motion_ctrl_plate v8',(#2976));
 #2973=APPLICATION_PROTOCOL_DEFINITION('international standard',
 'automotive_design',2009,#2974);
 #2974=APPLICATION_CONTEXT(
 'Core Data for Automotive Mechanical Design Process');
 #2975=PRODUCT_CONTEXT('part definition',#2974,'mechanical');
-#2976=PRODUCT('motion_ctrl_plate','motion_ctrl_plate v7',$,(#2975));
+#2976=PRODUCT('motion_ctrl_plate','motion_ctrl_plate v8',$,(#2975));
 #2977=PRESENTATION_STYLE_ASSIGNMENT((#2978));
 #2978=SURFACE_STYLE_USAGE(.BOTH.,#2979);
 #2979=SURFACE_SIDE_STYLE('',(#2980));

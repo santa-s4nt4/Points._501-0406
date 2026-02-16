@@ -10,11 +10,11 @@ FILE_DESCRIPTION(
 
 FILE_NAME(
 /* name */ 'moton_ctrl_wheel.step',
-/* time_stamp */ '2026-02-12T05:46:37+09:00',
+/* time_stamp */ '2026-02-15T06:58:31+09:00',
 /* author */ (''),
 /* organization */ (''),
 /* preprocessor_version */ 'ST-DEVELOPER v20.1',
-/* originating_system */ 'Autodesk Translation Framework v14.21.0.0',
+/* originating_system */ 'Autodesk Translation Framework v14.24.0.0',
 /* authorisation */ '');
 
 FILE_SCHEMA (('AUTOMOTIVE_DESIGN { 1 0 10303 214 3 1 1 }'));
