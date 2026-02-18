@@ -1,9 +1,15 @@
-#include "esp32-hal.h"
 #include "unit_rolleri2c.hpp" // ユーザー指定のヘッダー
+#include <FastLED.h>
 #include <M5AtomS3.h>
+
+// --- LED設定 (ここを実際の配線に合わせて変更してください) ---
+#define LED_PIN 5      // LEDテープのDINを接続するピン番号 (G2, G1はI2Cで使用中)
+#define NUM_LEDS 9     // LEDの数
+#define BRIGHTNESS 255 // 明るさ(0-255)
 
 // --- インスタンス作成 ---
 UnitRollerI2C roller;
+CRGB leds[NUM_LEDS];
 
 // --- グローバル変数 ---
 int32_t target_position = 0; // 目標位置
@@ -14,16 +20,14 @@ bool is_free_mode = false; // フリーモード状態管理フラグ
 const int32_t DEFAULT_MAX_CURRENT = 100000;
 const int32_t DEFAULT_SPEED_LIMIT = 240000;
 
-// 定数定義 (ライブラリ側で定義済みのため削除)
-// const roller_mode_t ROLLER_MODE_ENCODER = (roller_mode_t)4;
-
 // ===============================================================
 // 関数プロトタイプ宣言
 // ===============================================================
 uint8_t scanI2CAddress();
 void performHoming();
 void performCalibration();
-void parseSerialCommand();
+void processSerialInput();
+void executeMotorCommand(String cmd);
 
 // ===============================================================
 // 関数定義
@@ -159,73 +163,84 @@ void performHoming() {
 }
 
 // ---------------------------------------------------------------
-// シリアルコマンド解析
+// シリアル入力振分処理 (LED vs モーター)
 // ---------------------------------------------------------------
-void parseSerialCommand() {
+void processSerialInput() {
   if (Serial.available() > 0) {
-    String cmd = Serial.readStringUntil('\n');
-    cmd.trim();
-    cmd.toUpperCase();
+    // 最初の1バイトを覗き見して判断する
+    char header = Serial.peek();
 
-    // --- C: キャリブレーション ---
-    if (cmd.startsWith("C")) {
-      performCalibration();
-      return;
+    if (header == 'S') {
+      // --- LEDデータ処理 ---
+      // ヘッダー('S') + データ(LED数*3バイト) が揃うまで待つ
+      // ※データ不揃いの場合は処理せず次のループへ (ブロッキング回避)
+      if (Serial.available() >= (1 + NUM_LEDS * 3)) {
+        Serial.read(); // ヘッダー 'S' を読み捨てる
+        Serial.readBytes((char *)leds, NUM_LEDS * 3); // LEDデータを一括読み込み
+        FastLED.show();                               // LED更新
+      }
+    } else {
+      // --- モーターコマンド処理 ---
+      // 改行まで読み込む
+      String cmd = Serial.readStringUntil('\n');
+      cmd.trim();
+      if (cmd.length() > 0) {
+        executeMotorCommand(cmd);
+      }
     }
+  }
+}
 
-    // --- F: フリーモード ---
-    if (cmd.startsWith("F")) {
-      // 1. 出力をOFFにして脱力
-      roller.setOutput(0);
+// ---------------------------------------------------------------
+// モーターコマンド実行
+// ---------------------------------------------------------------
+void executeMotorCommand(String cmd) {
+  cmd.toUpperCase();
 
-      // 2. Encoder Mode (Mode 4) に設定
-      // ライブラリで定義されている定数を使用 (キャスト不要)
-      roller.setMode(ROLLER_MODE_ENCODER);
+  // --- C: キャリブレーション ---
+  if (cmd.startsWith("C")) {
+    performCalibration();
+    return;
+  }
 
-      // 3. 出力はOFFのまま維持
-      // Output 0でもエンコーダー値の更新が続くことを期待
+  // --- F: フリーモード ---
+  if (cmd.startsWith("F")) {
+    roller.setOutput(0);
+    roller.setMode(ROLLER_MODE_ENCODER);
+    is_free_mode = true;
+    Serial.println("Motor Free (Encoder Mode, Output 0)");
+    M5.Lcd.fillScreen(TFT_YELLOW);
+    M5.Lcd.setCursor(0, 0);
+    M5.Lcd.print("FREE MODE");
+    return;
+  }
 
-      is_free_mode = true;
-      Serial.println("Motor Free (Encoder Mode, Output 0)");
-      M5.Lcd.fillScreen(TFT_YELLOW);
-      M5.Lcd.setCursor(0, 0);
-      M5.Lcd.print("FREE MODE");
-      return;
-    }
+  // --- L: ロックモード (制御復帰) ---
+  if (cmd.startsWith("L")) {
+    roller.setMode(ROLLER_MODE_POSITION);
+    roller.setSpeed(DEFAULT_SPEED_LIMIT);
+    roller.setSpeedMaxCurrent(DEFAULT_MAX_CURRENT);
+    target_position = roller.getPos();
+    roller.setPos(target_position);
+    roller.setOutput(1);
+    is_free_mode = false;
+    Serial.println("Motor Locked");
+    M5.Lcd.fillScreen(TFT_BLACK);
+    return;
+  }
 
-    // --- L: ロックモード (制御復帰) ---
-    if (cmd.startsWith("L")) {
-      // 1. 位置制御モードに戻す
-      roller.setMode(ROLLER_MODE_POSITION);
+  // --- H: ホーミング ---
+  if (cmd.startsWith("H")) {
+    performHoming();
+    return;
+  }
 
-      // 2. パラメータ再設定
-      roller.setSpeed(DEFAULT_SPEED_LIMIT);
-      roller.setSpeedMaxCurrent(DEFAULT_MAX_CURRENT);
-
-      // 3. 現在地をターゲットにしてロック
-      target_position = roller.getPos();
-      roller.setPos(target_position);
-
-      // 4. 出力再開
-      roller.setOutput(1);
-
-      is_free_mode = false;
-      Serial.println("Motor Locked");
-      M5.Lcd.fillScreen(TFT_BLACK);
-      return;
-    }
-
-    // --- H: ホーミング ---
-    if (cmd.startsWith("H")) {
-      performHoming();
-      return;
-    }
-
-    // --- P: 位置指令 ---
-    int p_index = cmd.indexOf('P');
-    if (p_index != -1) {
-      String pos_str = cmd.substring(p_index + 1);
-      target_position = pos_str.toInt();
+  // --- P: 位置指令 ---
+  int p_index = cmd.indexOf('P');
+  if (p_index != -1) {
+    String pos_str = cmd.substring(p_index + 1);
+    target_position = pos_str.toInt();
+    if (!is_free_mode) {
       roller.setPos(target_position);
     }
   }
@@ -246,8 +261,19 @@ void setup() {
   M5.Display.setCursor(0, 0);
   M5.Display.print("Init...");
 
+  // --- LED初期化 ---
+  FastLED.addLeds<SK6812, LED_PIN, GRB>(leds, NUM_LEDS); // SK6812MINIの場合
+  FastLED.setBrightness(BRIGHTNESS);
+  // 起動確認: 青点灯
+  fill_solid(leds, NUM_LEDS, CRGB::Blue);
+  FastLED.show();
+  delay(500);
+  fill_solid(leds, NUM_LEDS, CRGB::Black);
+  FastLED.show();
+
+  // --- I2C / Motor初期化 ---
   delay(1000);
-  Wire.begin(2, 1, 400000UL); // AtomS3 Grove
+  Wire.begin(2, 1, 400000UL); // AtomS3 Grove Port
   delay(200);
 
   uint8_t found_addr = scanI2CAddress();
@@ -308,8 +334,10 @@ void loop() {
   M5.update();
   unsigned long current_time = millis();
 
-  parseSerialCommand();
+  // シリアル入力処理 (LED or Motor)
+  processSerialInput();
 
+  // 定期テレメトリ送信
   if (current_time - last_print_time >= 30) {
     last_print_time = current_time;
 
